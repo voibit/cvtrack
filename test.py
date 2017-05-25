@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 
 """ global vars """
+videofile="./tst.mp4" # =0 if webcam
+
 #color limits in hsv 
 lower=[0,0,0]
 upper=[0,0,0]
@@ -21,15 +23,15 @@ def setArea(x):
 	areaLimit=x
 	pass
 
-cap = cv2.VideoCapture("./tst.mp4")
+cap = cv2.VideoCapture(videofile)
 
 while not cap.isOpened():
-    cap = cv2.VideoCapture("./tst.mp4")
+    cap = cv2.VideoCapture(videofile)
 
     cv2.waitKey(1000)
-    print("Venter på video..")
+    print("awaiting video...")
 
-
+#Set appropriate size on video
 cap.set(3,320) 
 cap.set(4,240)
 
@@ -116,14 +118,14 @@ while(1):
     dilated = cv2.dilate(eroded, kernel, iterations = 3)
 
 
-    
-
     # show image where white in mask 
+    #TODO: use eroded-dilated mask
     res = cv2.bitwise_and(frame,frame, mask=mask)
  
+
+
     # calculate position 
     moment= cv2.moments(dilated)
-
     if (moment['m00'] > areaLimit):
         posX = moment['m10']/moment['m00']
         posY = moment['m01']/moment['m00']
@@ -134,6 +136,7 @@ while(1):
         cv2.circle(frame,(int(posX),int(posY)),40,255)
         cv2.circle(frame,(int(posX),int(posY)),41,255)
         if(save):
+        	#TODO: print frame with create uniqe name and pos.
         	print("SAVE?!")
 
     #show images
@@ -141,7 +144,6 @@ while(1):
     cv2.imshow('mask',mask)
     cv2.imshow('filtered',dilated)
     cv2.imshow('res',res)
-
 
 cv2.destroyAllWindows()
 
