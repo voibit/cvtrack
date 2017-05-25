@@ -1,18 +1,31 @@
 import cv2
 import numpy as np
 
+""" global vars """
 #color limits in hsv 
 lower=[0,0,0]
 upper=[0,0,0]
+save=0
+areaLimit=100000
 
 def nothing(x):
     #print(x)
     pass
 
+def setSave(x):
+	global save
+	save = x
+	pass
+def setArea(x):
+	global areaLimit
+	areaLimit=x
+	pass
+
 cap = cv2.VideoCapture("./tst.mp4")
 
 while not cap.isOpened():
     cap = cv2.VideoCapture("./tst.mp4")
+
     cv2.waitKey(1000)
     print("Venter på video..")
 
@@ -29,7 +42,7 @@ cv2.namedWindow('res')
 
 cv2.moveWindow('frame', 0,0)
 cv2.moveWindow('mask', 0,400)
-cv2.moveWindow('filtered', 400,400)
+cv2.moveWindow('filtered', 450,400)
 cv2.moveWindow('res', 0,800)
 cv2.moveWindow('lower', 450,0)
 cv2.moveWindow('upper', 755,0)
@@ -63,7 +76,7 @@ def sett2(x):
 
 
 
-cv2.createTrackbar('save','frame',0,1,nothing)
+cv2.createTrackbar('save','frame',0,1,setSave)
 # create trackbars for color change
 cv2.createTrackbar('R1','lower',0,255,sett)
 cv2.createTrackbar('G1','lower',0,255,sett)
@@ -72,6 +85,8 @@ cv2.createTrackbar('B1','lower',0,255,sett)
 cv2.createTrackbar('R2','upper',0,255,sett2)
 cv2.createTrackbar('G2','upper',0,255,sett2)
 cv2.createTrackbar('B2','upper',0,255,sett2)
+
+cv2.createTrackbar('area', 'filtered', 10000, 100000, setArea)
 
 cv2.imshow('lower',img)
 cv2.imshow('upper',img2)
@@ -95,10 +110,12 @@ while(1):
     # Threshold the HSV image to get only blue colors
     mask = cv2.inRange(hsv, np.array(lower), np.array(upper))
 
-    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (6,6))
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (6,7))
 
     eroded = cv2.erode(mask, kernel, iterations = 2)
-    dilated = cv2.dilate(eroded, kernel, iterations = 2)
+    dilated = cv2.dilate(eroded, kernel, iterations = 3)
+
+
     
 
     # show image where white in mask 
@@ -107,15 +124,17 @@ while(1):
     # calculate position 
     moment= cv2.moments(dilated)
 
-    if (moment['m00'] > 100000):
+    if (moment['m00'] > areaLimit):
         posX = moment['m10']/moment['m00']
         posY = moment['m01']/moment['m00']
 
         print ("areal: "+str(moment['m00'])+" x:"+str(posX)+" y:"+str(posY))
+
        	#draw circle to mark found position
         cv2.circle(frame,(int(posX),int(posY)),40,255)
         cv2.circle(frame,(int(posX),int(posY)),41,255)
-
+        if(save):
+        	print("SAVE?!")
 
     #show images
     cv2.imshow('frame',frame)
@@ -125,3 +144,4 @@ while(1):
 
 
 cv2.destroyAllWindows()
+
