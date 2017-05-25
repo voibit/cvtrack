@@ -11,7 +11,6 @@ def nothing(x):
 
 cap = cv2.VideoCapture("./tst.mp4")
 
-
 while not cap.isOpened():
     cap = cv2.VideoCapture("./tst.mp4")
     cv2.waitKey(1000)
@@ -42,23 +41,22 @@ img2 = np.zeros((100,300,3), np.uint8)
 
 
 def sett(x):
-    global r1, g1, g2
+    global lower 
     lower[0] = cv2.getTrackbarPos('R1','lower')
     lower[1] = cv2.getTrackbarPos('G1','lower')
     lower[2] = cv2.getTrackbarPos('B1','lower')
 
-
-    img[:] = [b1,g1,r1]
+    img[:] = [lower[2] ,lower[1] ,lower[0]]
     cv2.imshow('lower',img)
     pass
 
 def sett2(x):
-    global r2, g2, b2
+    global upper
     upper[0] = cv2.getTrackbarPos('R2','upper')
     upper[1] = cv2.getTrackbarPos('G2','upper')
     upper[2] = cv2.getTrackbarPos('B2','upper')
 
-    img2[:] = [b2,g2,r2]
+    img2[:] = [upper[2] ,upper[1] ,upper[0]]
     cv2.imshow('upper',img2)
     pass
 
@@ -100,7 +98,7 @@ while(1):
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (6,6))
 
     eroded = cv2.erode(mask, kernel, iterations = 2)
-    dilated = cv2.dilate(eroded, kernel, iterations = 1)
+    dilated = cv2.dilate(eroded, kernel, iterations = 2)
     
 
     # show image where white in mask 
