@@ -245,7 +245,7 @@ while(1):
         		print("too high")
         	else: 
 	        
-	        	cv2.imwrite("%s%s_%s.jpg"%(outfile,vidnr,imgnr),frame,[cv2.IMWRITE_PNG_COMPRESSION ,95])
+	        	cv2.imwrite("%s%s_%s.jpg"%(outfile,vidnr,imgnr),frame,[cv2.IMWRITE_JPG_COMPRESSION ,95])
 
 	        	with open("%s%s_%s.txt"%(outfile,vidnr,imgnr), "a+") as f:
 	        		f.write("0 %s %s %s %s"%(posXp,posYp,boxWidthP,boxHeightP))
