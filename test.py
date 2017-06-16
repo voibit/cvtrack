@@ -10,14 +10,13 @@ height=720.
 
 hJust=910
 """ global vars """
-if len(sys.argv) < 2: 
-	print("ingen argument er gitt.. ")
+if len(sys.argv) < 4: 
+	print("dir outdir vidnr ")
 	exit()
 
-vidnr=sys.argv[1]
-
-videofile="./video/red/"+vidnr+".mp4" # =0 if webcam
-outfile="./video/red/img/"
+vidnr=sys.argv[3]
+videofile=sys.argv[1]+vidnr+".mp4" # =0 if webcam
+outfile=sys.argv[2]
 imgnr=0
 
 
@@ -245,7 +244,7 @@ while(1):
         		print("too high")
         	else: 
 	        
-	        	cv2.imwrite("%s%s_%s.jpg"%(outfile,vidnr,imgnr),frame,[cv2.IMWRITE_JPG_COMPRESSION ,95])
+	        	cv2.imwrite("%s%s_%s.jpg"%(outfile,vidnr,imgnr),frame,[cv2.IMWRITE_JPEG_QUALITY ,95])
 
 	        	with open("%s%s_%s.txt"%(outfile,vidnr,imgnr), "a+") as f:
 	        		f.write("0 %s %s %s %s"%(posXp,posYp,boxWidthP,boxHeightP))
