@@ -4,11 +4,10 @@ import cv2
 import numpy as np
 import sys
 
-
 width=1280.
 height=720.
-
 hJust=910
+
 """ global vars """
 if len(sys.argv) < 4: 
 	print("dir outdir vidnr ")
@@ -19,22 +18,19 @@ videofile=sys.argv[1]+vidnr+".mp4" # =0 if webcam
 outfile=sys.argv[2]
 imgnr=0
 
-
 #color limits i bgr
 lower=[0,0,0]
 upper=[0,0,0]
-
 lowerN=[0,0,0]
 upperN=[0,0,0]
-
 save=0
 neg=0
 filt=0
 areaLimit=100000
 
 def nothing(x):
-    #print(x)
-    pass
+	#print(x)
+	pass
 
 def setSave(x):
 	global save
@@ -61,28 +57,21 @@ cap = cv2.VideoCapture(videofile)
 
 while not cap.isOpened():
     cap = cv2.VideoCapture(videofile)
-
     cv2.waitKey(1000)
     print("awaiting video...")
-
 
 cv2.namedWindow('frame')
 cv2.namedWindow('lower')
 cv2.namedWindow('upper')
-
 cv2.namedWindow('lower-')
 cv2.namedWindow('upper-')
 cv2.namedWindow('mask')
-
-
 cv2.namedWindow('neg')
-
 cv2.moveWindow('frame', 0,40)
 cv2.moveWindow('mask', 1500,50)
 cv2.moveWindow('neg', 1500,1050)
 cv2.moveWindow('lower', 0,hJust)
 cv2.moveWindow('upper', 305,hJust)
-
 cv2.moveWindow('lower-', 610,hJust)
 cv2.moveWindow('upper-', 915,hJust)
 
@@ -92,14 +81,11 @@ img2= img.copy()
 img3= img.copy()
 img4= img.copy()
 
-
-
 def sett(x):
     global lower 
     lower[2] = cv2.getTrackbarPos('R1','lower')
     lower[1] = cv2.getTrackbarPos('G1','lower')
     lower[0] = cv2.getTrackbarPos('B1','lower')
-
     img[:] = lower
     cv2.imshow('lower', img)
     pass
@@ -110,58 +96,42 @@ def sett2(x):
     upper[2] = cv2.getTrackbarPos('R2','upper')
     upper[1] = cv2.getTrackbarPos('G2','upper')
     upper[0] = cv2.getTrackbarPos('B2','upper')
-
     img2[:] = upper
-
     cv2.imshow('upper',img2)
     pass
-
 def sett3(x):
     global lowerN
     lowerN[2] = cv2.getTrackbarPos('R3','lower-')
     lowerN[1] = cv2.getTrackbarPos('G3','lower-')
     lowerN[0] = cv2.getTrackbarPos('B3','lower-')
-
     img3[:] = lowerN
-
     cv2.imshow('lower-',img3)
     pass
-
 def sett4(x):
     global upperN
     upperN[2] = cv2.getTrackbarPos('R4','upper-')
     upperN[1] = cv2.getTrackbarPos('G4','upper-')
     upperN[0] = cv2.getTrackbarPos('B4','upper-')
-
     img4[:] = upperN
-
     cv2.imshow('upper-',img4)
     pass
 
-
 cv2.createTrackbar('save','frame',0,1,setSave)
-
 cv2.createTrackbar('sub','neg',0,1,setNeg)
-
 cv2.createTrackbar('filt','mask',0,1,setFilt)
 # create trackbars for color change
 cv2.createTrackbar('R1','lower',0,255,sett)
 cv2.createTrackbar('G1','lower',0,255,sett)
 cv2.createTrackbar('B1','lower',0,255,sett)
-
 cv2.createTrackbar('R2','upper',0,255,sett2)
 cv2.createTrackbar('G2','upper',0,255,sett2)
 cv2.createTrackbar('B2','upper',0,255,sett2)
-
 cv2.createTrackbar('R3','lower-',0,255,sett3)
 cv2.createTrackbar('G3','lower-',0,255,sett3)
 cv2.createTrackbar('B3','lower-',0,255,sett3)
-
 cv2.createTrackbar('R4','upper-',0,255,sett4)
 cv2.createTrackbar('G4','upper-',0,255,sett4)
 cv2.createTrackbar('B4','upper-',0,255,sett4)
-
-
 cv2.createTrackbar('area', 'mask', 10000, 100000, setArea)
 
 cv2.imshow('lower',img)
@@ -169,14 +139,11 @@ cv2.imshow('upper',img2)
 cv2.imshow('lower-',img3)
 cv2.imshow('upper-',img4)
 
-
 while(1):
     #slowdown
     k = cv2.waitKey()   
     if k == 27: #esc 
         break
-
-
     # Take each frame
     _, frame = cap.read()
 
@@ -184,14 +151,9 @@ while(1):
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     bgrL = np.array(lower,np.uint8)
     bgrU = np.array(upper,np.uint8)
-
-
     bgrLN = np.array(lowerN,np.uint8)
     bgrUN = np.array(upperN,np.uint8)
-
     mask = cv2.inRange(hsv, bgrL, bgrU)
-
-
     maskN = cv2.inRange(hsv, bgrLN, bgrUN)
 
     if neg: 
@@ -220,13 +182,13 @@ while(1):
 
     # calculate position 
     moment= cv2.moments(mask)
-    if (moment['m00'] > areaLimit):
 
+    if (moment['m00'] > areaLimit):
+		
         posX = moment['m10']/moment['m00']
         posY = moment['m01']/moment['m00']
         posXp = posX/width
         posYp = posY/height
-
         posX=int(posX)
         posY=int(posY)
 
@@ -250,7 +212,6 @@ while(1):
 	        		f.write("0 %s %s %s %s"%(posXp,posYp,boxWidthP,boxHeightP))
 	        	print("%s%s_%s.jpg saved"%(outfile,vidnr,imgnr))
 	        	imgnr+=1
-
     #show images
     cv2.imshow('frame',frame2)
     cv2.imshow('neg',maskN)
@@ -258,4 +219,3 @@ while(1):
     cv2.imshow('mask',res)
 
 cv2.destroyAllWindows()
-
